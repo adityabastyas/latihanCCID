@@ -6,8 +6,10 @@ on: [push]
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
-    permissions :
-      packages: read|write|none
+
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout source code
@@ -30,17 +32,23 @@ jobs:
       - name: Check build result
         run: ls dist/
 
-      - name: "[DOCKER] Setup metadata"
-        uses: docker/metadata-actions@v5
-        with: 
-          images: ghcr.io/adityabastyas/koda-b6-cicd-frontend
-      
-      - name: Login GHCR
-        uses:  docker/Login-action@v3
+      - name: Setup docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
         with:
-          registry : ghcr.id
-          username: ${{github.repository_owner}}
-          password: ${{secrets.GITHUB_TOKEN}}
+          images: ghcr.io/adityabastyas/koda-b6-cicd-frontend
 
-      - name
+      - name: Login GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
