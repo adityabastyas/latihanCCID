@@ -6,6 +6,8 @@ on: [push]
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
+    permissions :
+      packages: read|write|none
 
     steps:
       - name: Checkout source code
@@ -27,3 +29,18 @@ jobs:
 
       - name: Check build result
         run: ls dist/
+
+      - name: "[DOCKER] Setup metadata"
+        uses: docker/metadata-actions@v5
+        with: 
+          images: ghcr.io/adityabastyas/koda-b6-cicd-frontend
+      
+      - name: Login GHCR
+        uses:  docker/Login-action@v3
+        with:
+          registry : ghcr.id
+          username: ${{github.repository_owner}}
+          password: ${{secrets.GITHUB_TOKEN}}
+
+      - name
+
