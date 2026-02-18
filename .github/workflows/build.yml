@@ -8,6 +8,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
       - name: Setup nodejs v22.22.0
         uses: actions/setup-node@v6
         with:
@@ -16,12 +19,11 @@ jobs:
       - name: Check nodejs version
         run: node -v
 
-      - name: Gathering source code
-        uses: actions/setup-node@v6
+      - name: Install dependencies
+        run: npm install
 
       - name: Build app
-        run: npm install && npm run build
+        run: npm run build
 
       - name: Check build result
         run: ls dist/
-        
